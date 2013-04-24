@@ -1,0 +1,31 @@
+#! /usr/bin/env python
+
+from bs4 import BeautifulSoup
+import requests
+import sys
+
+system_args = sys.argv
+submission_file = system_args[1]
+problem_code,extension = '',''
+
+if '.' in submission_file : 
+	problem_code,extension = submission_file.split('.')
+else :
+	problem_code = submission_file
+
+r = requests.get('http://codechef.com/problems/'+problem_code)
+
+soup = BeautifulSoup(r.text)
+
+#print soup.pre.contents
+try :
+	contents  = iter(soup.pre.contents)
+except :
+	print 'wrong problem code';
+	exit(0)
+iofile = {'Input:':'in.txt', 'Output:':'out.txt'}
+for x in contents:
+	if x.string in iofile:
+		f = open(iofile[x.string], "w")
+		f.write(contents.next())
+		f.close()
